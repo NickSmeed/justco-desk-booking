@@ -66,6 +66,7 @@ function App() {
       setAppLoading(true);
       const { data, error } = await db.from("desks").select("*");
       if (!error && data && data.length > 0) {
+        console.log("Raw desk data from Supabase:", JSON.stringify(data));
         setDesks(data.map(d => ({ ...d, x: Number(d.x), y: Number(d.y), r: d.r === true || d.r === "true" || d.r === 1 })));
       }
       setAppLoading(false);
