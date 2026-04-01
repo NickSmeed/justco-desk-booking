@@ -56,6 +56,7 @@ function App() {
   const [dragId, setDragId] = useState(null);
   const [dragStart, setDragStart] = useState(null);
   const [livePos, setLivePos] = useState(null);
+  const didDragRef = useRef(false);
   const svgRef = useRef(null);
 
   // Google Sign-In
@@ -135,6 +136,7 @@ function App() {
     setDragId(desk.id);
     setDragStart({ cx: e.clientX, cy: e.clientY, ox: desk.x, oy: desk.y, r: desk.r, scale: SVG_W / rect.width });
     setLivePos({ x: desk.x, y: desk.y });
+    didDragRef.current = false;
   };
 
   const onMouseMove = useCallback((e) => {
@@ -142,6 +144,7 @@ function App() {
     e.preventDefault();
     const dx = Math.round((e.clientX - dragStart.cx) * dragStart.scale / UNIT);
     const dy = Math.round((e.clientY - dragStart.cy) * dragStart.scale / UNIT);
+    if (dx !== 0 || dy !== 0) didDragRef.current = true;
     setLivePos(clampDesk(dragStart.ox + dx, dragStart.oy + dy, dragStart.r));
   }, [dragId, dragStart]);
 
@@ -224,7 +227,7 @@ function App() {
       <g key={desk.id} opacity={isDragging ? 0.5 : 1}
         style={{ cursor: editMode ? (isDragging ? "grabbing" : "grab") : "pointer" }}
         onMouseDown={editMode ? (e) => onMouseDown(e, desk) : undefined}
-        onClick={() => { if (!dragId) setModal({ desk, existing: booking }); }}>
+        onClick={() => { if (!didDragRef.current) setModal({ desk, existing: booking }); }}>
         <rect x={bx} y={by} width={rw} height={rh} fill={fill} stroke={stroke} strokeWidth={1} rx={4} />
         <text x={bx+rw/2} y={by+rh/2-(booked?8:0)} textAnchor="middle" dominantBaseline="middle" fontSize={11} fontWeight="500" fill={tc} style={{pointerEvents:"none"}}>{desk.label}</text>
         {booked && <text x={bx+rw/2} y={by+rh/2+8} textAnchor="middle" dominantBaseline="middle" fontSize={9} fill={tc} style={{pointerEvents:"none"}}>{booking.name.length>11?booking.name.slice(0,11)+"…":booking.name}</text>}
