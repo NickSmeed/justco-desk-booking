@@ -133,6 +133,19 @@ function App() {
     setDragId(null); setDragStart(null); setLivePos(null);
   }, [dragId, livePos, desks]);
 
+  const exportBookings = async () => {
+    const { data, error } = await db.from("bookings").select("*").order("date").order("desk_id");
+    if (error || !data || data.length === 0) { showStatus("No bookings to export", "info"); return; }
+    const rows = [["Name", "Desk", "Date"], ...data.map(b => [b.name, b.desk_id, b.date])];
+    const csv = rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "justco-bookings.csv"; a.click();
+    URL.revokeObjectURL(url);
+    showStatus(`Exported ${data.length} booking${data.length !== 1 ? "s" : ""}`, "success");
+  };
+
   const rotateDesk = async (e, id) => {
     e.stopPropagation();
     const desk = desks.find(d => d.id === id);
@@ -239,6 +252,7 @@ function App() {
           <button onClick={() => setDate(d => addDays(d, 1))} disabled={date >= maxDate()} style={{...s.btn(false), padding:"4px 10px", fontSize:16, opacity:date>=maxDate()?0.35:1}}>›</button>
         </div>
         <button onClick={attemptEdit} style={s.btn(editMode)}>{editMode ? "Done editing" : "Edit layout"}</button>
+        <button onClick={exportBookings} style={s.btn(false)}>Export bookings</button>
         <div style={s.legend}>
           {[["Available","#E6FBF2","#00BF65"],["Booked","#FCEBEB","#A32D2D"]].map(([lbl,bg,col]) => (
             <span key={lbl} style={s.legendItem}>
