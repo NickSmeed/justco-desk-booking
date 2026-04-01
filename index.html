@@ -224,7 +224,7 @@ function App() {
       <g key={desk.id} opacity={isDragging ? 0.5 : 1}
         style={{ cursor: editMode ? (isDragging ? "grabbing" : "grab") : "pointer" }}
         onMouseDown={editMode ? (e) => onMouseDown(e, desk) : undefined}
-        onClick={!editMode ? () => setModal({ desk, existing: booking }) : undefined}>
+        onClick={() => { if (!dragId) setModal({ desk, existing: booking }); }}>
         <rect x={bx} y={by} width={rw} height={rh} fill={fill} stroke={stroke} strokeWidth={1} rx={4} />
         <text x={bx+rw/2} y={by+rh/2-(booked?8:0)} textAnchor="middle" dominantBaseline="middle" fontSize={11} fontWeight="500" fill={tc} style={{pointerEvents:"none"}}>{desk.label}</text>
         {booked && <text x={bx+rw/2} y={by+rh/2+8} textAnchor="middle" dominantBaseline="middle" fontSize={9} fill={tc} style={{pointerEvents:"none"}}>{booking.name.length>11?booking.name.slice(0,11)+"…":booking.name}</text>}
