@@ -22,7 +22,7 @@ const { useState, useRef, useCallback } = React;
 const UNIT = 40, DW = 4, DH = 2, PAD = 3;
 const GCOLS = 18, GROWS = 12;
 const SVG_W = GCOLS * UNIT, SVG_H = GROWS * UNIT;
-const ADMIN_PIN = "2026"; // <-- CHANGE THIS
+const ADMIN_PIN = "1234"; // <-- CHANGE THIS
 
 const INIT_DESKS = [
   { id: "d1", label: "Desk 1", x: 0,  y: 0, r: false },
@@ -38,6 +38,8 @@ const gx = (x) => x * UNIT;
 const gy = (y) => y * UNIT;
 const today = () => new Date().toISOString().split("T")[0];
 const fmtDate = (d) => new Date(d + "T00:00:00").toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+const urlDate = () => { const p = new URLSearchParams(window.location.search).get("date"); return p && /^\d{4}-\d{2}-\d{2}$/.test(p) ? p : today(); };
+const addDays = (d, n) => { const dt = new Date(d + "T00:00:00"); dt.setDate(dt.getDate() + n); return dt.toISOString().split("T")[0]; };
 
 const clampDesk = (x, y, r) => ({
   x: Math.max(0, Math.min(GCOLS - (r ? DH : DW), x)),
@@ -47,7 +49,7 @@ const clampDesk = (x, y, r) => ({
 function App() {
   const [desks, setDesks] = useState(INIT_DESKS);
   const [bookings, setBookings] = useState({});
-  const [date, setDate] = useState(today());
+  const [date, setDate] = useState(urlDate());
   const [editMode, setEditMode] = useState(false);
   const [pinModal, setPinModal] = useState(false);
   const [pinInput, setPinInput] = useState("");
@@ -192,9 +194,13 @@ function App() {
   return (
     <div style={s.wrap}>
       <div style={s.bar}>
-        <div>
-          <label style={s.label}>Date</label>
-          <input type="date" value={date} min={today()} onChange={e => setDate(e.target.value)} style={s.dateInput} />
+        <div style={{display:"flex", alignItems:"center", gap:6}}>
+          <button onClick={() => setDate(d => addDays(d, -1))} style={{...s.btn(false), padding:"4px 10px", fontSize:16}}>‹</button>
+          <div>
+            <label style={s.label}>Date</label>
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={s.dateInput} />
+          </div>
+          <button onClick={() => setDate(d => addDays(d, 1))} style={{...s.btn(false), padding:"4px 10px", fontSize:16}}>›</button>
         </div>
         <button onClick={attemptEdit} style={s.btn(editMode)}>{editMode ? "Done editing" : "Edit layout"}</button>
         <div style={s.legend}>
