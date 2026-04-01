@@ -135,14 +135,13 @@ function App() {
 
   const rotateDesk = async (e, id) => {
     e.stopPropagation();
-    let updated;
-    setDesks(prev => prev.map(d => {
-      if (d.id !== id) return d;
-      const nr = !d.r;
-      updated = { ...d, r: nr, ...clampDesk(d.x, d.y, nr) };
-      return updated;
-    }));
-    if (updated) await db.from("desks").update({ r: updated.r, x: updated.x, y: updated.y }).eq("id", id);
+    const desk = desks.find(d => d.id === id);
+    if (!desk) return;
+    const nr = !desk.r;
+    const clamped = clampDesk(desk.x, desk.y, nr);
+    const updated = { ...desk, r: nr, ...clamped };
+    setDesks(prev => prev.map(d => d.id === id ? updated : d));
+    await db.from("desks").update({ r: nr, x: clamped.x, y: clamped.y }).eq("id", id);
   };
 
   const confirmBooking = async () => {
