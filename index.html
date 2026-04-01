@@ -141,9 +141,9 @@ function App() {
     const w = (desk.r ? DH : DW) * UNIT, h = (desk.r ? DW : DH) * UNIT;
     const bx = gx(gxv) + PAD, by = gy(gyv) + PAD;
     const rw = w - PAD * 2, rh = h - PAD * 2;
-    const fill = booked ? "#FCEBEB" : "#EAF3DE";
-    const stroke = booked ? "#A32D2D" : "#3B6D11";
-    const tc = booked ? "#791F1F" : "#27500A";
+    const fill = booked ? "#FCEBEB" : "#E6FBF2";
+    const stroke = booked ? "#A32D2D" : "#00BF65";
+    const tc = booked ? "#791F1F" : "#007A40";
     return (
       <g key={desk.id} opacity={isDragging ? 0.5 : 1}
         style={{ cursor: editMode ? (isDragging ? "grabbing" : "grab") : "pointer" }}
@@ -193,6 +193,7 @@ function App() {
 
   return (
     <div style={s.wrap}>
+      <h1 style={{fontSize:20, fontWeight:500, marginBottom:16, color:"#00BF65"}}>JustCo Hot Desk Bookings</h1>
       <div style={s.bar}>
         <div style={{display:"flex", alignItems:"center", gap:6}}>
           <button onClick={() => setDate(d => addDays(d, -1))} style={{...s.btn(false), padding:"4px 10px", fontSize:16}}>‹</button>
