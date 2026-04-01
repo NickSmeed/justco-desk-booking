@@ -227,7 +227,7 @@ function App() {
       <g key={desk.id} opacity={isDragging ? 0.5 : 1}
         style={{ cursor: editMode ? (isDragging ? "grabbing" : "grab") : "pointer" }}
         onMouseDown={editMode ? (e) => onMouseDown(e, desk) : undefined}
-        onClick={() => { if (!didDragRef.current) setModal({ desk, existing: booking }); }}>
+        onClick={!editMode ? () => setModal({ desk, existing: booking }) : undefined}>
         <rect x={bx} y={by} width={rw} height={rh} fill={fill} stroke={stroke} strokeWidth={1} rx={4} />
         <text x={bx+rw/2} y={by+rh/2-(booked?8:0)} textAnchor="middle" dominantBaseline="middle" fontSize={11} fontWeight="500" fill={tc} style={{pointerEvents:"none"}}>{desk.label}</text>
         {booked && <text x={bx+rw/2} y={by+rh/2+8} textAnchor="middle" dominantBaseline="middle" fontSize={9} fill={tc} style={{pointerEvents:"none"}}>{booking.name.length>11?booking.name.slice(0,11)+"…":booking.name}</text>}
@@ -235,6 +235,12 @@ function App() {
           <g onMouseDown={e=>e.stopPropagation()} onClick={(e)=>rotateDesk(e,desk.id)} style={{cursor:"pointer"}}>
             <rect x={bx+rw-20} y={by+3} width={17} height={17} rx={3} fill="white" stroke={stroke} strokeWidth={0.5} opacity={0.92}/>
             <text x={bx+rw-11} y={by+12} textAnchor="middle" dominantBaseline="middle" fontSize={13} fill={tc} style={{pointerEvents:"none"}}>↻</text>
+          </g>
+        )}
+        {editMode && !isDragging && booked && (
+          <g onMouseDown={e=>e.stopPropagation()} onClick={(e)=>{ e.stopPropagation(); setModal({ desk, existing: booking }); }} style={{cursor:"pointer"}}>
+            <rect x={bx+2} y={by+3} width={17} height={17} rx={3} fill="white" stroke="#A32D2D" strokeWidth={0.5} opacity={0.92}/>
+            <text x={bx+11} y={by+12} textAnchor="middle" dominantBaseline="middle" fontSize={12} fill="#A32D2D" style={{pointerEvents:"none"}}>✕</text>
           </g>
         )}
       </g>
